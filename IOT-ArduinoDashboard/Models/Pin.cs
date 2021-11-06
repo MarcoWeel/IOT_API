@@ -16,11 +16,5 @@ namespace IOT_ArduinoDashboard.Models
             Input,
             Output
         }
-
-        public enum Type
-        {
-            analogue,
-            digital
-        }
     }
 }

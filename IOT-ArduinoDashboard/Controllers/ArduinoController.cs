@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IOT_ArduinoDashboard;
 using IOT_ArduinoDashboard.Data;
 using ArduinoIOT_Library;
+using IOT_ArduinoDashboard.Models;
 
 namespace IOT_ArduinoDashboard.Controllers
 {
@@ -86,6 +87,42 @@ namespace IOT_ArduinoDashboard.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetArduinoModel", new { id = arduinoModel.ArduinoId }, arduinoModel);
+        }
+
+        [HttpPost]
+        [Route("/Pins")]
+        public async Task<ActionResult<ArduinoModel>> PostPins([FromBody] List<PinRequestModel> model)
+        {
+            foreach (var pin in model)
+            {
+                if (pin.pinType == PinRequestModel.Type.digital)
+                {
+                    DigitalPin digitalPin = new DigitalPin
+                    {
+                       ArduinoId = pin.ArduinoModel.ArduinoId,
+                       ArduinoModel = pin.ArduinoModel,
+                       pinNumber = Int32.Parse(pin.pinNameString)
+                    };
+                    _context.DigitalPin.Add(digitalPin);
+                    await _context.SaveChangesAsync();
+                }
+                else if (pin.pinType == PinRequestModel.Type.analogue)
+                {
+                    AnaloguePin AnaloguePin = new AnaloguePin
+                    {
+                        ArduinoId = pin.ArduinoModel.ArduinoId,
+                        ArduinoModel = pin.ArduinoModel,
+                        pinString = pin.pinNameString,
+                    };
+                    _context.AnaloguePin.Add(AnaloguePin);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            return Ok(); 
         }
 
         // DELETE: api/Arduino/5

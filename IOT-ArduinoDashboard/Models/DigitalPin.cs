@@ -14,10 +14,10 @@ namespace IOT_ArduinoDashboard.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; private set; }
 
-        public int pinNumber { get; private set; }
+        public int pinNumber { get; set; }
         [ForeignKey("ArduinoId")]
-        public ArduinoModel ArduinoModel { get; private set; }
+        public ArduinoModel ArduinoModel { get; set; }
 
-        public int ArduinoId { get; private set; }
+        public int ArduinoId { get; set; }
     }
 }
