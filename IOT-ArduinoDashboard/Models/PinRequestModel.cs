@@ -7,13 +7,11 @@ namespace IOT_ArduinoDashboard.Models
 {
     public class PinRequestModel
     {
-        //public List<DigitalPin> DigitalPins { get; private set; }
-        //public List<AnaloguePin> AnaloguePins { get; private set; }
-        public ArduinoModel ArduinoModel;
-        public string pinNameString;
-        public Pin.Mode pinMode;
-        public Type pinType;
-        public int ArduinoId;
+        public ArduinoModel ArduinoModel { get; set; }
+        public string pinNameString { get; set; }
+        public Pin.Mode pinMode { get; set; }
+        public Type pinType { get; set; }
+        public int ArduinoId { get; set; }
 
         public enum Type
         {
