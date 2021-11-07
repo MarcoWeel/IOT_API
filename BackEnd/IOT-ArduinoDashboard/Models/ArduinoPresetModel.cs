@@ -11,11 +11,11 @@ namespace IOT_ArduinoDashboard.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; private set; }
+        public int Id { get; set; }
         [Column(TypeName = "varchar(50)")]
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
-        public int DigitalPinCount { get; private set; }
-        public int AnaloguePinCount { get; private set; }
+        public int DigitalPinCount { get; set; }
+        public int AnaloguePinCount { get; set; }
     }
 }

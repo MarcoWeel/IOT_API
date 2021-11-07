@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using IOT_ArduinoDashboard.Models;
 
 
 namespace IOT_ArduinoDashboard
@@ -14,7 +15,9 @@ namespace IOT_ArduinoDashboard
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ArduinoId { get; private set; }
 
-        [Column(TypeName = "varchar(50)")] 
-        public string Name { get;  set; }
+        [Column(TypeName = "varchar(50)")]
+        public string Name { get; set; }
+
+        public ArduinoPresetModel Preset { get; set; }
     }
 }

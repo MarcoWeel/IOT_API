@@ -10,7 +10,7 @@ namespace IOT_ArduinoDashboard.Models
 {
     public abstract class Pin
     {
-        public Mode pinMode { get; private set; }
+        public Mode pinMode { get; set; }
         public enum Mode
         {
             Input,
