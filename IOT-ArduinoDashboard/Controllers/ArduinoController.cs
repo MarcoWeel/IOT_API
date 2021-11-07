@@ -27,7 +27,7 @@ namespace IOT_ArduinoDashboard.Controllers
         // GET: api/Arduino
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ArduinoModel>>> GetArduinoModel()
-        { 
+        {
             sender.SendPostRequest("http://172.16.222.67/body", "TestName", "TestPassword");
             return await _context.ArduinoModel.ToListAsync();
         }
@@ -44,6 +44,48 @@ namespace IOT_ArduinoDashboard.Controllers
             }
 
             return arduinoModel;
+        }
+
+        [HttpGet]
+        [Route("/pins")]
+        public async Task<ActionResult<IEnumerable<PinRequestModel>>> GetPins(int id)
+        {
+            var digitalPins = await _context.DigitalPin.ToListAsync();
+            var AnaloguePins = await _context.AnaloguePin.ToListAsync();
+            List<PinRequestModel> pinRequestModels = new List<PinRequestModel>();
+            foreach (var pin in digitalPins)
+            {
+                PinRequestModel pinModel = new PinRequestModel
+                {
+                    ArduinoId = pin.ArduinoId,
+                    pinMode = pin.pinMode,
+                    pinNameString = pin.pinNumber.ToString(),
+                    pinType = PinRequestModel.Type.digital,
+                    ArduinoModel = await _context.ArduinoModel.FindAsync(pin.ArduinoId)
+                };
+                pinRequestModels.Add(pinModel);
+            }
+
+            foreach (var pin in AnaloguePins)
+            {
+                PinRequestModel pinModel = new PinRequestModel
+                {
+                    ArduinoId = pin.ArduinoId,
+                    pinMode = pin.pinMode,
+                    pinNameString = pin.pinString,
+                    pinType = PinRequestModel.Type.analogue,
+                    ArduinoModel = await _context.ArduinoModel.FindAsync(pin.ArduinoId)
+                };
+                pinRequestModels.Add(pinModel);
+            }
+
+
+            if (pinRequestModels == null)
+            {
+                return NotFound();
+            }
+
+            return pinRequestModels;
         }
 
         // PUT: api/Arduino/5
@@ -77,12 +119,14 @@ namespace IOT_ArduinoDashboard.Controllers
             return NoContent();
         }
 
+
+
         // POST: api/Arduino
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("{name}")]
         public async Task<ActionResult<ArduinoModel>> PostArduinoModel([FromRoute] string name)
         {
-            ArduinoModel arduinoModel = new ArduinoModel{Name = name};
+            ArduinoModel arduinoModel = new ArduinoModel { Name = name };
             _context.ArduinoModel.Add(arduinoModel);
             await _context.SaveChangesAsync();
 
@@ -91,17 +135,17 @@ namespace IOT_ArduinoDashboard.Controllers
 
         [HttpPost]
         [Route("/Pins")]
-        public async Task<ActionResult<ArduinoModel>> PostPins([FromBody] List<PinRequestModel> model)
+        public async Task<ActionResult<IEnumerable<PinRequestModel>>> PostPins([FromBody] List<PinRequestModel> model)
         {
-            foreach (var pin in model)
+             foreach (var pin in model)
             {
                 if (pin.pinType == PinRequestModel.Type.digital)
                 {
                     DigitalPin digitalPin = new DigitalPin
                     {
-                       ArduinoId = pin.ArduinoModel.ArduinoId,
-                       ArduinoModel = pin.ArduinoModel,
-                       pinNumber = Int32.Parse(pin.pinNameString)
+                        ArduinoId = pin.ArduinoId,
+                        ArduinoModel = await _context.ArduinoModel.FindAsync(pin.ArduinoId),
+                        pinNumber = Int32.Parse(pin.pinNameString)
                     };
                     _context.DigitalPin.Add(digitalPin);
                     await _context.SaveChangesAsync();
@@ -110,8 +154,8 @@ namespace IOT_ArduinoDashboard.Controllers
                 {
                     AnaloguePin AnaloguePin = new AnaloguePin
                     {
-                        ArduinoId = pin.ArduinoModel.ArduinoId,
-                        ArduinoModel = pin.ArduinoModel,
+                        ArduinoId = pin.ArduinoId,
+                        ArduinoModel = await _context.ArduinoModel.FindAsync(pin.ArduinoId),
                         pinString = pin.pinNameString,
                     };
                     _context.AnaloguePin.Add(AnaloguePin);
@@ -122,7 +166,7 @@ namespace IOT_ArduinoDashboard.Controllers
                     return BadRequest();
                 }
             }
-            return Ok(); 
+            return Ok();
         }
 
         // DELETE: api/Arduino/5
