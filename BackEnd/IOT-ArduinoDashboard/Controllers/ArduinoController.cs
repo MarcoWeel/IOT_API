@@ -12,6 +12,7 @@ using IOT_ArduinoDashboard.Models;
 
 namespace IOT_ArduinoDashboard.Controllers
 {
+    
     [Route("/Arduino")]
     [ApiController]
     public class ArduinoController : ControllerBase
@@ -130,16 +131,27 @@ namespace IOT_ArduinoDashboard.Controllers
         }
 
         [HttpPost("preset")]
-        public async Task<ActionResult<ArduinoModel>> PostArduinoModel([FromBody] ArduinoPresetModel model)
+        public async Task<ActionResult<ArduinoModel>> PostArduinoModel([FromBody] ArduinoPresetRequestModel model)
         {
             ArduinoPresetModel ArduinoPresetModel = new ArduinoPresetModel
             {
                 Name = model.Name,
-                AnaloguePinCount = model.AnaloguePinCount,
-                DigitalPinCount = model.DigitalPinCount
+                AnaloguePinCount = model.AnaloguePinCount.Count,
+                DigitalPinCount = model.DigitalPinCount.Count
             };
             _context.ArduinoPresetModel.Add(ArduinoPresetModel);
             await _context.SaveChangesAsync();
+            var Id = ArduinoPresetModel.ArduinoId;
+            for (int i = 0; i < model.AnaloguePinCount.Count; i++)
+            {
+                _context.ArduinoPresetPinModel.Add(new ArduinoPresetPinModel { ArduinoId = Id });
+                await _context.SaveChangesAsync();
+            }
+            for (int i = 0; i < model.DigitalPinCount.Count; i++)
+            {
+                _context.ArduinoPresetPinModel.Add(new ArduinoPresetPinModel() { ArduinoId = Id });
+                await _context.SaveChangesAsync();
+            }
 
             return Ok();
         }

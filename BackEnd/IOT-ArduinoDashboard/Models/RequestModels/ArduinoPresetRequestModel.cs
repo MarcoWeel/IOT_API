@@ -7,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace IOT_ArduinoDashboard.Models
 {
-    public class ArduinoPresetModel
+    public class ArduinoPresetRequestModel
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ArduinoId { get; set; }
         [Column(TypeName = "varchar(50)")]
         public string Name { get; set; }
-
-        public int DigitalPinCount { get; set; }
-        public int AnaloguePinCount { get; set; }
+        public List<DigitalPin> DigitalPinCount { get; set; }
+        public List<AnaloguePin> AnaloguePinCount { get; set; }
     }
 }

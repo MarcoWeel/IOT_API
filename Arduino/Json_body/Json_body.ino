@@ -1,11 +1,16 @@
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
 
 ESP8266WebServer server(80);
 
-const char* ssid = "SSID";
-const char* password =  "INSERTPASSWORD";
+const char* ssid = "Guests";
+const char* password =  "grade!eight";
+
+bool HasSetup = false;
+String serverName = "https://172.16.222.128:44300/pins/";
+int Id = 1;
 
 void setup() {
   Serial.begin(115200);
@@ -15,6 +20,32 @@ void setup() {
 
     delay(500);
     Serial.println("Waiting to connect...");
+
+  }
+    Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());  //Print the local IP
+  while(!HasSetup)
+  {
+    WiFiClient client;
+  HTTPClient http;
+
+  String serverPath = serverName + Id;
+  Serial.print(serverPath);
+  http.begin(client, serverPath);
+
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode>0) {
+  Serial.print("HTTP Response code: ");
+  Serial.println(httpResponseCode);
+  String payload = http.getString();
+  Serial.println(payload);
+  HasSetup = true;
+}
+else {
+  Serial.print("Error code: ");
+  Serial.println(httpResponseCode);
+}
 
   }
   pinMode(LED_BUILTIN, OUTPUT);
