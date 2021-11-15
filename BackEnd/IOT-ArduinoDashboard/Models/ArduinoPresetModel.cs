@@ -11,7 +11,7 @@ namespace IOT_ArduinoDashboard.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ArduinoId { get; set; }
+        public int PresetId { get; set; }
         [Column(TypeName = "varchar(50)")]
         public string Name { get; set; }
 

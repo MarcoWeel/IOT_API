@@ -141,15 +141,15 @@ namespace IOT_ArduinoDashboard.Controllers
             };
             _context.ArduinoPresetModel.Add(ArduinoPresetModel);
             await _context.SaveChangesAsync();
-            var Id = ArduinoPresetModel.ArduinoId;
+            var Id = ArduinoPresetModel.PresetId;
             for (int i = 0; i < model.AnaloguePinCount.Count; i++)
             {
-                _context.ArduinoPresetPinModel.Add(new ArduinoPresetPinModel { ArduinoId = Id });
+                _context.ArduinoPresetPinModel.Add(new ArduinoPresetPinModel { PresetId = Id , Name = model.AnaloguePinCount[i].pinString, PinType = ArduinoPresetPinModel.Type.analogue});
                 await _context.SaveChangesAsync();
             }
             for (int i = 0; i < model.DigitalPinCount.Count; i++)
             {
-                _context.ArduinoPresetPinModel.Add(new ArduinoPresetPinModel() { ArduinoId = Id });
+                _context.ArduinoPresetPinModel.Add(new ArduinoPresetPinModel() { PresetId = Id, Name = model.DigitalPinCount[i].pinNumber.ToString(), PinType = ArduinoPresetPinModel.Type.digital });
                 await _context.SaveChangesAsync();
             }
 

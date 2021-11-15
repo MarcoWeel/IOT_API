@@ -18,6 +18,8 @@ namespace IOT_ArduinoDashboard
         [Column(TypeName = "varchar(50)")]
         public string Name { get; set; }
 
+        [ForeignKey("PresetId")]
         public ArduinoPresetModel Preset { get; set; }
+        public int PresetId { get; set; }
     }
 }

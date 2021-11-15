@@ -16,10 +16,10 @@ namespace IOT_ArduinoDashboard.Models
         public string Name { get; set; }
         public Type PinType { get; set; }
 
-        [ForeignKey("ArduinoId")]
+        [ForeignKey("PresetId")]
         public ArduinoPresetModel ArduinoPresetModel { get; set; }
 
-        public int ArduinoId { get; set; }
+        public int PresetId { get; set; }
 
         public enum Type
         {

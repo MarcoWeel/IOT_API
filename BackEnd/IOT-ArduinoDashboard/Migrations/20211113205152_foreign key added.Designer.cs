@@ -2,14 +2,16 @@
 using IOT_ArduinoDashboard.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IOT_ArduinoDashboard.Migrations
 {
     [DbContext(typeof(IOT_DataContext))]
-    partial class IOT_DataContextModelSnapshot : ModelSnapshot
+    [Migration("20211113205152_foreign key added")]
+    partial class foreignkeyadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
