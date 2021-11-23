@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>IOT_ArduinoDashboard</RootNamespace>
     <UserSecretsId>53e7b9db-3364-41c2-9254-fd95a66c9a60</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>

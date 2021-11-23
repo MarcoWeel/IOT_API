@@ -39,6 +39,8 @@ namespace IOT_ArduinoDashboard
                 dbContextOptions => dbContextOptions
                     .UseMySql(connectionString, serverVersion));
 
+            services.AddCors();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "IOT_ArduinoDashboard", Version = "v1" });
@@ -55,11 +57,14 @@ namespace IOT_ArduinoDashboard
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "IOT_ArduinoDashboard v1"));
             }
 
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
 
             app.UseEndpoints(endpoints =>
             {
