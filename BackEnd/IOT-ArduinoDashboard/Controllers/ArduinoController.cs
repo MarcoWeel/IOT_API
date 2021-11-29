@@ -29,7 +29,7 @@ namespace IOT_ArduinoDashboard.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ArduinoModel>>> GetArduinoModel()
         {
-            sender.SendPostRequest("http://192.168.2.13/body", "TestName", "TestPassword");
+            //sender.SendPostRequest("http://192.168.2.13/body", "TestName", "TestPassword");
             return await _context.ArduinoModel.ToListAsync();
         }
 
@@ -92,6 +92,9 @@ namespace IOT_ArduinoDashboard.Controllers
             {
                 return BadRequest();
             }
+
+            List<ArduinoPresetPinModel> Pins = await _context.ArduinoPresetPinModel.ToListAsync();
+
             ArduinoModel arduinoModel = new ArduinoModel
             {
                 Name = name,
@@ -100,17 +103,30 @@ namespace IOT_ArduinoDashboard.Controllers
             _context.ArduinoModel.Add(arduinoModel);
             await _context.SaveChangesAsync();
             var Id = arduinoModel.ArduinoId;
-            for (int i = 0; i < arduinoPreset.AnaloguePinCount; i++)
+            foreach (var pin in Pins)
             {
-                _context.AnaloguePin.Add(new AnaloguePin { ArduinoId = Id});
-                await _context.SaveChangesAsync();
+                if (pin.PresetId == id)
+                {
+                    if (pin.PinType == ArduinoPresetPinModel.Type.analogue)
+                    {
+                        _context.AnaloguePin.Add(new AnaloguePin
+                        {
+                            ArduinoId = Id,
+                            pinString = pin.Name
+                        });
+                        await _context.SaveChangesAsync();
+                    }
+                    else if (pin.PinType == ArduinoPresetPinModel.Type.digital)
+                    {
+                        _context.DigitalPin.Add(new DigitalPin
+                        {
+                            ArduinoId = Id,
+                            pinNumber = Int32.Parse(pin.Name)
+                        });
+                        await _context.SaveChangesAsync();
+                    }
+                }
             }
-            for (int i = 0; i < arduinoPreset.DigitalPinCount; i++)
-            {
-                _context.DigitalPin.Add(new DigitalPin { ArduinoId = Id });
-                await _context.SaveChangesAsync();
-            }
-
             return CreatedAtAction("GetArduinoModel", new { id = arduinoModel.ArduinoId }, arduinoModel);
         }
 
@@ -157,6 +173,12 @@ namespace IOT_ArduinoDashboard.Controllers
         }
 
 
+        [HttpGet("presets")]
+        public async Task<ActionResult<IEnumerable<ArduinoPresetModel>>> GetArduinoPresetModel()
+        {
+            //sender.SendPostRequest("http://192.168.2.13/body", "TestName", "TestPassword");
+            return await _context.ArduinoPresetModel.ToListAsync();
+        }
         //PINS BELOW
 
 
@@ -315,6 +337,7 @@ namespace IOT_ArduinoDashboard.Controllers
 
             return pinRequestModels;
         }
+
 
         private bool ArduinoModelExists(int id)
         {

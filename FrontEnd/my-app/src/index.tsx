@@ -7,12 +7,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CreatePreset from "./Views/Preset/CreatePreset";
 import Home from "./Views/Home/Home";
 import AddArduino from "./Views/Arduino/AddArduino";
+import ArduinoList from "./Views/Arduino/ArduinoList";
+import EditArduino from "./Views/Arduino/EditArduino";
 
 ReactDOM.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/arduino" element={<AddArduino />} />
+      <Route path="/arduino/create" element={<AddArduino />} />
+      <Route path="/arduino/edit/:ArduinoId" element={<EditArduino />} />
+      <Route path="/arduino" element={<ArduinoList />} />
       <Route path="/arduino/preset" element={<CreatePreset />} />
       {/* <Route path=":teamId" element={<Team />} /> */}
     </Routes>

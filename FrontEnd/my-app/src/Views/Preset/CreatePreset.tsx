@@ -4,26 +4,111 @@ import "../../App.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Header from "../../Components/Header";
 
 function CreatePreset() {
   const [id, setId] = useState("");
-  const [name, setName] = useState("");
+  const [Name, setName] = useState("");
   const [Analogue, setAnalogue] = useState("");
   const [Digital, setDigital] = useState("");
   const [submitMessage, setSubmitMessage] = useState(<div></div>);
 
+  let data = {
+    name: Name,
+    digitalPinCount: [
+      {
+        pinMode: 0,
+        id: 0,
+        pinNumber: null,
+        arduinoModel: {
+          name: "string",
+          preset: {
+            presetId: 0,
+            name: "string",
+            digitalPinCount: 0,
+            analoguePinCount: 0,
+          },
+          presetId: 0,
+        },
+        arduinoId: 0,
+      },
+    ],
+    analoguePinCount: [
+      {
+        pinMode: 0,
+        id: 0,
+        pinString: null,
+        arduinoModel: {
+          name: "string",
+          preset: {
+            presetId: 0,
+            name: "string",
+            digitalPinCount: 0,
+            analoguePinCount: 0,
+          },
+          presetId: 0,
+        },
+        arduinoId: 0,
+      },
+    ],
+  };
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    var bodyFormData = new FormData();
-    bodyFormData.append("Floor.Id", id);
-    bodyFormData.append("Floor.Name", name);
-    bodyFormData.append("Floor.Length", Analogue);
-    bodyFormData.append("Floor.Width", Digital);
+    console.log(event);
+    for (let index = 3; index < event.target.length - 1; index++) {
+      const PinValue = event.target[index].value;
+      if (event.target[index].id == "Digital") {
+        if (data.digitalPinCount[0].pinNumber == null) {
+          data.digitalPinCount[0].pinNumber = PinValue;
+        } else {
+          data.digitalPinCount.push({
+            pinMode: 0,
+            id: 0,
+            pinNumber: PinValue,
+            arduinoModel: {
+              name: "string",
+              preset: {
+                presetId: 0,
+                name: "string",
+                digitalPinCount: 0,
+                analoguePinCount: 0,
+              },
+              presetId: 0,
+            },
+            arduinoId: 0,
+          });
+        }
+      }
+      if (event.target[index].id == "Analogue") {
+        if (data.analoguePinCount[0].pinString == null) {
+          data.analoguePinCount[0].pinString = PinValue;
+        } else {
+          data.analoguePinCount.push({
+            pinMode: 0,
+            id: 0,
+            pinString: PinValue,
+            arduinoModel: {
+              name: "string",
+              preset: {
+                presetId: 0,
+                name: "string",
+                digitalPinCount: 0,
+                analoguePinCount: 0,
+              },
+              presetId: 0,
+            },
+            arduinoId: 0,
+          });
+        }
+      }
+    }
+    console.log(data);
     axios({
       method: "post",
-      url: "http://localhost:5006/Floor/",
-      data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data" },
+      url: "http://localhost:8080/Arduino/preset",
+      data: data,
+      headers: { "Content-Type": "application/json" },
     })
       .then((res) => {
         console.log(res);
@@ -40,14 +125,43 @@ function CreatePreset() {
   };
   let Pins = [];
   for (let index = 0; index < Number(Analogue); index++) {
-    Pins.push(<div>A</div>);
+    let id = "Analogue";
+    Pins.push(
+      <div>
+        <div>Analogue Pin</div>
+        <Form.Group controlId="formBasicPinString">
+          <Form.Control
+            type="name"
+            placeholder="Enter Analogue Pin ID"
+            className="textarea"
+            required
+            id={id}
+          ></Form.Control>
+        </Form.Group>
+      </div>
+    );
   }
   for (let index = 0; index < Number(Digital); index++) {
-    Pins.push(<div>B</div>);
+    let id = "Digital";
+    Pins.push(
+      <div>
+        <div>Digital Pin</div>
+        <Form.Group controlId="formBasicPinId">
+          <Form.Control
+            type="number"
+            placeholder="Enter Digital Pin ID"
+            className="textarea"
+            required
+            id={id}
+          ></Form.Control>
+        </Form.Group>
+      </div>
+    );
   }
 
   return (
     <div>
+      <Header />
       <Form onSubmit={(e: any) => handleSubmit(e)}>
         <Form.Group controlId="formBasicName">
           <Form.Control
@@ -56,14 +170,14 @@ function CreatePreset() {
             onChange={(e: any) => setName(e.target.value)}
             className="textarea"
             required
-            value={name}
+            value={Name}
           ></Form.Control>
         </Form.Group>
 
-        <Form.Group controlId="formBasicLength">
+        <Form.Group controlId="formBasicAnaloguePinCount">
           <Form.Control
             type="number"
-            placeholder="Enter length"
+            placeholder="Enter Analogue pin count"
             onChange={(e: any) => setAnalogue(e.target.value)}
             className="textarea"
             required
@@ -71,10 +185,10 @@ function CreatePreset() {
           ></Form.Control>
         </Form.Group>
 
-        <Form.Group controlId="formBasicWidth">
+        <Form.Group controlId="formBasicDigitalPinCount">
           <Form.Control
             type="number"
-            placeholder="Enter width"
+            placeholder="Enter Digital pin count"
             onChange={(e: any) => setDigital(e.target.value)}
             className="textarea"
             required
@@ -84,7 +198,7 @@ function CreatePreset() {
         {Pins}
         <div className="form-group">
           <Button type="submit" className="btn btnpos">
-            Save
+            Save preset
           </Button>
           {submitMessage}
         </div>
