@@ -11,18 +11,25 @@ namespace ArduinoIOT_Library
 {
     public class RequestSender
     {
-        public void SendPostRequest(string url, string user, string password)
+        public void SendPostRequest(string url, string pinName, int type, int state)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
-
+            if (type == 1)
+            {
+                if (state > 1 || state < 0)
+                {
+                    return;
+                }
+            }
             using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
                 string json = new JavaScriptSerializer().Serialize(new
                 {
-                    pin = 2,
-                    state = 1
+                    Pin = pinName,
+                    State = state,
+                    Type = type
                 });
 
                 streamWriter.Write(json);

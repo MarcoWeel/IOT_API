@@ -1,16 +1,30 @@
+#include <LinkedList.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
+
 ESP8266WebServer server(80);
 
+//Setup values
 const char* ssid = "Guests";
 const char* password =  "grade!eight";
+const int Id = 7;
+String serverGetName = "http://172.16.222.199:8080/pins/";
+String serverPostPath = "http://172.16.222.199:8080/state/";
+String serverSignUpPath = "http://172.16.222.199:8080/state/";
+//End Setup values
+
+int TESTER = D5;
 
 bool HasSetup = false;
-String serverName = "https://172.16.222.128:44300/pins/";
-int Id = 1;
+LinkedList<int> activePins = LinkedList<int>();
+LinkedList<int> pinTypes = LinkedList<int>();
+LinkedList<int> pinModes = LinkedList<int>();
+LinkedList<double> States = LinkedList<double>();
+
+WiFiClient client;
 
 void setup() {
   Serial.begin(115200);
@@ -20,49 +34,75 @@ void setup() {
 
     delay(500);
     Serial.println("Waiting to connect...");
+    //Serial.println(TESTER);
 
   }
-    Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());  //Print the local IP
-  while(!HasSetup)
-  {
-    WiFiClient client;
-  HTTPClient http;
-
-  String serverPath = serverName + Id;
-  Serial.print(serverPath);
-  http.begin(client, serverPath);
-
-  int httpResponseCode = http.GET();
-
-  if (httpResponseCode>0) {
-  Serial.print("HTTP Response code: ");
-  Serial.println(httpResponseCode);
-  String payload = http.getString();
-  Serial.println(payload);
-  HasSetup = true;
-}
-else {
-  Serial.print("Error code: ");
-  Serial.println(httpResponseCode);
-}
-
-  }
-  pinMode(LED_BUILTIN, OUTPUT);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());  //Print the local IP
+  String payload;
+  while (!HasSetup)
+  {
 
+    HTTPClient http;
+
+
+    String serverGetPath = serverGetName + Id;
+    Serial.print(serverGetPath);
+    http.begin(client, serverGetPath);
+
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode > 0) {
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+      payload = http.getString();
+      DynamicJsonDocument doc(2048);
+      deserializeJson(doc, payload);
+      //      Serial.print("Size: ");
+      JsonArray array = doc.as<JsonArray>();
+      //      Serial.println(array.size());
+      delay(10);
+      for (int i = 0; i < array.size(); i++) {
+        if (array[i]["pinMode"].as<int>() == 0) {
+          pinMode(array[i]["pinNameString"].as<int>(), INPUT) ;
+        }
+        else {
+          pinMode(array[i]["pinNameString"].as<int>(), OUTPUT) ;
+        }
+
+        //        Serial.println(i);
+        //        Serial.println(array[i]["pinNameString"].as<int>());
+        //        Serial.println(array[i]["pinMode"].as<int>());
+        activePins.add(array[i]["pinNameString"].as<int>());
+        pinModes.add(array[i]["pinMode"].as<int>());
+        pinTypes.add(array[i]["pinType"].as<int>());
+        States.add(0);
+      }
+      HasSetup = true;
+    }
+    else {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+    }
+
+  }
+  HTTPClient http;
+  String Path = serverSignUpPath + Id + "/" + WiFi.localIP().toString();
+  http.begin(client, Path);
+  http.POST(payload);
+  http.end();
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());  //Print the local IP
   server.on("/body", handleBody); //Associate the handler function to the path
 
   server.begin(); //Start the server
   Serial.println("Server listening");
-
 }
 
 void loop() {
 
   server.handleClient(); //Handling of incoming requests
-
+  CheckStates();
 }
 
 void handleBody() { //Handler for the body path
@@ -78,13 +118,60 @@ void handleBody() { //Handler for the body path
   message += "\n";
 
   //server.send(200, "text/plain", message);
-  server.send(200, "text/plain" , " hallo " );
+  server.send(200, "text/plain" , " received " );
   DynamicJsonDocument doc(1024);
   deserializeJson(doc, server.arg("plain"));
   int Pin = doc["pin"];
+  int Type = doc["type"];
   int State = doc["state"];
+  if (Type == 0) {
+    analogWrite(Pin, State);
+  }
+  else {
+    digitalWrite(Pin, State);
+  }
   digitalWrite(Pin, State);
   Serial.println(Pin);
   Serial.println(State);
-  Serial.println(message);
+  Serial.println(Type);
+}
+
+void CheckStates() {
+  HTTPClient PostClient;
+
+  for (int i = 0; i < activePins.size(); i++) {
+    if (pinTypes.get(i) == 1) {
+      if (pinModes.get(i) == 0) {
+        double pinVal = digitalRead(activePins.get(i));
+        if (pinVal != States.get(i)) {
+          String URL = serverPostPath + activePins.get(i) + "/" + pinVal;
+          Serial.println(URL);
+          States.set(i, pinVal);
+          PostClient.begin(client, URL);
+          PostClient.POST({});
+          Serial.print("Pin: ");
+          Serial.print(activePins.get(i));
+          Serial.print(" State: ");
+          Serial.println(States.get(i));
+        }
+      }
+    }
+    else if (pinTypes.get(i) == 1) {
+      if (pinModes.get(i) == 0) {
+        double pinVal = analogRead(activePins.get(i));
+        if (pinVal != States.get(i)) {
+          String URL = serverPostPath + activePins.get(i) + "/" + pinVal;
+          Serial.println(URL);
+          States.set(i, pinVal);
+          PostClient.begin(client, URL);
+          PostClient.POST({});
+          Serial.print("Pin: ");
+          Serial.print(activePins.get(i));
+          Serial.print(" State: ");
+          Serial.println(States.get(i));
+        }
+      }
+    }
+  }
+  PostClient.end();
 }

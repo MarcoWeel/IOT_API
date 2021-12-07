@@ -343,5 +343,36 @@ namespace IOT_ArduinoDashboard.Controllers
         {
             return _context.ArduinoModel.Any(e => e.ArduinoId == id);
         }
+
+        public async Task<List<PinRequestModel>> GetPinsForStates(int id)
+        {
+            var Analogue = await _context.AnaloguePin.Where(r => r.ArduinoId == id).ToListAsync();
+            var Digital = await _context.DigitalPin.Where(r => r.ArduinoId == id).ToListAsync();
+            List<PinRequestModel> Pins = new List<PinRequestModel>();
+            foreach (var pin in Analogue)
+            {
+                Pins.Add(new PinRequestModel{
+                    ArduinoId = pin.ArduinoId,
+                    Id = pin.Id, 
+                    pinMode = pin.pinMode,
+                    pinNameString = pin.pinString,
+                    pinType = PinRequestModel.Type.analogue,
+                    ArduinoModel = pin.ArduinoModel});
+            }
+
+            foreach (var pin in Digital)
+            {
+                Pins.Add(new PinRequestModel
+                {
+                    ArduinoId = pin.ArduinoId,
+                    Id = pin.Id,
+                    pinMode = pin.pinMode,
+                    pinNameString = pin.pinNumber.ToString(),
+                    pinType = PinRequestModel.Type.analogue,
+                    ArduinoModel = pin.ArduinoModel
+                });
+            }
+            return Pins;
+        }
     }
 }

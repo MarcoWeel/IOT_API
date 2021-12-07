@@ -29,4 +29,8 @@
     <ProjectReference Include="..\ArduinoIOT-Library\ArduinoIOTLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\StateHandling\" />
+  </ItemGroup>
+
 </Project>
