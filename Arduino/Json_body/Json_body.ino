@@ -14,7 +14,7 @@ const int Id = 7;
 String serverGetName = "http://172.16.222.199:8080/pins/";
 String serverPostPath = "http://172.16.222.199:8080/state/";
 String serverSignUpPath = "http://172.16.222.199:8080/state/";
-int UsedCommands[] ={0,1};
+int UsedCommands[] = {0, 1};
 //End Setup values
 
 int TESTER = D5;
@@ -88,6 +88,10 @@ void setup() {
 
   }
   HTTPClient http;
+  DynamicJsonDocument doc(1024);
+  for(i = 0; i < UsedCommands.length; i++){
+    doc[""][i] = UsedCommands[i];
+  }
   String Path = serverSignUpPath + Id + "/" + WiFi.localIP().toString();
   http.begin(client, Path);
   http.POST({});
@@ -95,7 +99,7 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());  //Print the local IP
   server.on("/body", handleBody); //Associate the handler function to the path
-
+  server.on("/time", handleTime);
   server.begin(); //Start the server
   Serial.println("Server listening");
 }
@@ -134,6 +138,25 @@ void handleBody() { //Handler for the body path
   Serial.println(Pin);
   Serial.println(State);
   Serial.println(Type);
+}
+
+void handleTime(){
+   if (server.hasArg("plain") == false) { //Check if body received
+
+    server.send(200, "text/plain", "Body not received");
+    return;
+
+  }
+  String message = "Body received:\n";
+  message += server.arg("plain");
+  message += "\n";
+
+  //server.send(200, "text/plain", message);
+  server.send(200, "text/plain" , " received " );
+  DynamicJsonDocument doc(1024);
+  deserializeJson(doc, server.arg("plain"));
+  String Time = doc["time"];
+  Serial.println(Time);
 }
 
 void CheckStates() {
