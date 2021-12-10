@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using IOT_ArduinoDashboard.Data;
+using IOT_ArduinoDashboard.Services;
 
 namespace IOT_ArduinoDashboard
 {
@@ -28,8 +29,7 @@ namespace IOT_ArduinoDashboard
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
+            services.AddControllersWithViews();
 
             var connectionString = Configuration["MySQL:ConnectionString"];
 
@@ -38,6 +38,10 @@ namespace IOT_ArduinoDashboard
             services.AddDbContext<IOT_DataContext>(
                 dbContextOptions => dbContextOptions
                     .UseMySql(connectionString, serverVersion));
+
+            services.AddLogging();
+
+            services.AddSingleton<StateService>();
 
             services.AddCors();
 

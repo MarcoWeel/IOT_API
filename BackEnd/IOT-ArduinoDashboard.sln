@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IOT-ArduinoDashboard", "IOT-ArduinoDashboard\IOT-ArduinoDashboard.csproj", "{5FB663DD-90A3-4F02-AF39-29CAEF854F63}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F065D304-2D6B-42EC-9791-89D246406EA8} = {F065D304-2D6B-42EC-9791-89D246406EA8}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArduinoIOTLibrary", "ArduinoIOT-Library\ArduinoIOTLibrary.csproj", "{F065D304-2D6B-42EC-9791-89D246406EA8}"
 EndProject

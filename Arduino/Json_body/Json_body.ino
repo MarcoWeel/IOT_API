@@ -14,6 +14,7 @@ const int Id = 7;
 String serverGetName = "http://172.16.222.199:8080/pins/";
 String serverPostPath = "http://172.16.222.199:8080/state/";
 String serverSignUpPath = "http://172.16.222.199:8080/state/";
+int UsedCommands[] ={0,1};
 //End Setup values
 
 int TESTER = D5;
@@ -34,7 +35,7 @@ void setup() {
 
     delay(500);
     Serial.println("Waiting to connect...");
-    //Serial.println(TESTER);
+    Serial.println(TESTER);
 
   }
   Serial.print("IP address: ");
@@ -89,7 +90,7 @@ void setup() {
   HTTPClient http;
   String Path = serverSignUpPath + Id + "/" + WiFi.localIP().toString();
   http.begin(client, Path);
-  http.POST(payload);
+  http.POST({});
   http.end();
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());  //Print the local IP
@@ -130,7 +131,6 @@ void handleBody() { //Handler for the body path
   else {
     digitalWrite(Pin, State);
   }
-  digitalWrite(Pin, State);
   Serial.println(Pin);
   Serial.println(State);
   Serial.println(Type);

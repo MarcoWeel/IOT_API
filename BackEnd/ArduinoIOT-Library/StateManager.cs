@@ -9,11 +9,11 @@ namespace ArduinoIOT_Library
 {
     public class StateManager
     {
-        public List<Arduino> Arduinos { get; set; }
+        //public List<Arduino> Arduinos { get; set; }
 
-        public void AddArduino(Arduino arduino)
-        {
+        //public void AddArduino(Arduino arduino)
+        //{
 
-        }
+        //}
     }
 }
