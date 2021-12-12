@@ -11,14 +11,12 @@ ESP8266WebServer server(80);
 const char* ssid = "ThuisgroepOW";
 const char* password =  "sukkel67919772!";
 const int Id = 7;
-String serverGetName = "http://192.168.2.27:8080/pins/";
-String serverPostPath = "http://192.168.2.27:8080/State/";
-String serverSignUpPath = "http://192.168.2.27:8080/State/";
+const String Ip = "192.168.2.27";
 String UsedCommands = "[0, 1]";
 //End Setup values
 
-int TESTER = D5;
-
+String serverGetName = "http://" + Ip + ":8080/pins/";
+String serverPostPath = "http://" + Ip + ":8080/State/";
 bool HasSetup = false;
 LinkedList<int> activePins = LinkedList<int>();
 LinkedList<int> pinTypes = LinkedList<int>();
@@ -35,8 +33,6 @@ void setup() {
 
     delay(500);
     Serial.println("Waiting to connect...");
-    Serial.println(TESTER);
-
   }
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());  //Print the local IP
@@ -48,7 +44,7 @@ void setup() {
 
 
     String serverGetPath = serverGetName + Id;
-    Serial.print(serverGetPath);
+    Serial.println(serverGetPath);
     http.begin(client, serverGetPath);
 
     int httpResponseCode = http.GET();
@@ -57,11 +53,9 @@ void setup() {
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
       payload = http.getString();
-      DynamicJsonDocument doc(2048);
+      DynamicJsonDocument doc(4096);
       deserializeJson(doc, payload);
-      //      Serial.print("Size: ");
       JsonArray array = doc.as<JsonArray>();
-      //      Serial.println(array.size());
       delay(10);
       for (int i = 0; i < array.size(); i++) {
         if (array[i]["pinMode"].as<int>() == 0) {
@@ -70,10 +64,6 @@ void setup() {
         else {
           pinMode(array[i]["pinNameString"].as<int>(), OUTPUT) ;
         }
-
-        //        Serial.println(i);
-        //        Serial.println(array[i]["pinNameString"].as<int>());
-        //        Serial.println(array[i]["pinMode"].as<int>());
         activePins.add(array[i]["pinNameString"].as<int>());
         pinModes.add(array[i]["pinMode"].as<int>());
         pinTypes.add(array[i]["pinType"].as<int>());
@@ -88,13 +78,11 @@ void setup() {
 
   }
   HTTPClient http;
-  DynamicJsonDocument doc(1024);
-  for(i = 0; i < UsedCommands.length; i++){
-    doc[""][i] = UsedCommands[i];
-  }
-  String Path = serverSignUpPath + Id + "/" + WiFi.localIP().toString();
+  String Path = serverPostPath + Id + "/" + WiFi.localIP().toString();
   http.begin(client, Path);
   Serial.println(Path);
+  Serial.println(UsedCommands);
+  http.addHeader("Content-Type", "application/json");
   http.POST(UsedCommands);
   http.end();
   Serial.print("IP address: ");
@@ -141,8 +129,8 @@ void handleBody() { //Handler for the body path
   Serial.println(Type);
 }
 
-void handleTime(){
-   if (server.hasArg("plain") == false) { //Check if body received
+void handleTime() {
+  if (server.hasArg("plain") == false) { //Check if body received
 
     server.send(200, "text/plain", "Body not received");
     return;
