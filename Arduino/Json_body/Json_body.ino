@@ -8,13 +8,13 @@
 ESP8266WebServer server(80);
 
 //Setup values
-const char* ssid = "Guests";
-const char* password =  "grade!eight";
+const char* ssid = "ThuisgroepOW";
+const char* password =  "sukkel67919772!";
 const int Id = 7;
-String serverGetName = "http://172.16.222.199:8080/pins/";
-String serverPostPath = "http://172.16.222.199:8080/state/";
-String serverSignUpPath = "http://172.16.222.199:8080/state/";
-int UsedCommands[] = {0, 1};
+String serverGetName = "http://192.168.2.27:8080/pins/";
+String serverPostPath = "http://192.168.2.27:8080/State/";
+String serverSignUpPath = "http://192.168.2.27:8080/State/";
+String UsedCommands = "[0, 1]";
 //End Setup values
 
 int TESTER = D5;
@@ -94,7 +94,8 @@ void setup() {
   }
   String Path = serverSignUpPath + Id + "/" + WiFi.localIP().toString();
   http.begin(client, Path);
-  http.POST({});
+  Serial.println(Path);
+  http.POST(UsedCommands);
   http.end();
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());  //Print the local IP
