@@ -19,22 +19,23 @@ namespace IOT_ArduinoDashboard.Controllers
     [ApiController]
     public class PinStateController : ControllerBase
     {
-        private readonly StateService _StateService;
+        private readonly StateService__ _StateService;
         private readonly IOT_DataContext _context;
         private RequestReceiver receiver;
 
-        public PinStateController(StateService stateService, IOT_DataContext context)
+        public PinStateController(StateService__ stateService, IOT_DataContext context)
         {
             _StateService = stateService;
             _context = context;
             receiver = new RequestReceiver(stateService.manager);
         }
 
-        //RequestSender sender = new RequestSender();
+        RequestSender sender = new RequestSender();
         // GET: api/<PinStateController>
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            sender.SendPinStateRequest("http://172.16.222.151/body", "2",1, 1);
             return new string[] { "value1", "value2" };
         }
 
@@ -42,6 +43,7 @@ namespace IOT_ArduinoDashboard.Controllers
         [HttpPost("{pin}/{val}/{id}")]
         public void StateReceiver([FromRoute]string pin, double val, int id)
         {
+            sender.SendPinStateRequest("http://172.16.222.151/body", "2", 1, 0);
             receiver.ProcessRequest(pin, val, id);
             //sender.SendPostRequest("http://172.16.222.200/body", "12",1, 1);
         }

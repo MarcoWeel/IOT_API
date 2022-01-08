@@ -8,11 +8,11 @@
 ESP8266WebServer server(80);
 
 //Setup values
-const char* ssid = "ThuisgroepOW";
-const char* password =  "sukkel67919772!";
+const char* ssid = "Guests";
+const char* password =  "grade!eight";
 const int Id = 7;
-const String Ip = "192.168.2.27";
-String UsedCommands = "[0, 1]";
+const String Ip = "172.16.222.63";
+String UsedCommands = "[0, 1, 2]";
 //End Setup values
 
 String serverGetName = "http://" + Ip + ":8080/pins/";
@@ -35,14 +35,15 @@ void setup() {
   while (!HasSetup)
   {
     SetupStateManager();
-    //ADD SERVER LISTEN COMMANDS HERE
-    server.on("/body", handleBody); //handles the states sent by the server
-    server.on("/time", handleTime); //handles time sent by the server.
-
-    ////////////////////////////////////////////////
-    server.begin(); //Start the server
-    Serial.println("Server listening");
   }
+  //ADD SERVER LISTEN COMMANDS HERE
+  server.on("/body", handleBody); //handles the states sent by the server
+  server.on("/time", handleTime); //handles time sent by the server.
+
+  ////////////////////////////////////////////////
+
+  server.begin(); //Start the server
+  Serial.println("Server listening");
   SignUpArduino();
 }
 
@@ -66,11 +67,15 @@ void handleBody() { //Handler for the body path
   int Pin = doc["pin"];
   int Type = doc["type"];
   int State = doc["state"];
+  Serial.println(Pin);
+  Serial.println(Type);
+  Serial.println(State);
   if (Type == 0) {
     analogWrite(Pin, State);
   }
   else {
     digitalWrite(Pin, State);
+    Serial.println("WRITELOCATION");
   }
 }
 

@@ -43,8 +43,8 @@ namespace IOT_ArduinoDashboard
 
             //services.AddHostedService<testService>();
 
-            services.AddSingleton<StateService>();
-            services.AddHostedService<StateService>(provider => provider.GetService<StateService>());
+            services.AddSingleton<StateService__>();
+            services.AddHostedService<StateService__>(provider => provider.GetService<StateService__>());
 
             services.AddCors();
 

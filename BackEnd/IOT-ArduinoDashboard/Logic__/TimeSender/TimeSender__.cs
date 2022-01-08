@@ -7,7 +7,7 @@ using Nancy.Json;
 
 namespace IOT_ArduinoDashboard.Logic.TimeSender
 {
-    public class TimeSender
+    public class TimeSender__
     {
         private RequestSender sender = new RequestSender();
         public void SendTime(string ip)

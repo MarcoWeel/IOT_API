@@ -21,6 +21,7 @@ void SetupStateManager() {
     Serial.print("HTTP Response code: ");
     Serial.println(httpResponseCode);
     payload = http.getString();
+    Serial.println(payload);
     DynamicJsonDocument doc(4096);
     deserializeJson(doc, payload);
     JsonArray array = doc.as<JsonArray>();
