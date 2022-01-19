@@ -10,10 +10,10 @@ namespace IOT_ArduinoDashboard.Logic__
     public class blink
     {
         private RequestSender sender = new RequestSender();
-        public void SendBlink(string ip, string pinName, int pinType, double state)
+        public bool SendBlink(string ip, string pinName, int pinType, double state)
         {
             string URL = $"http://{ip}/body";
-            sender.SendPinStateRequest(URL, pinName,pinType, state);
+            return sender.SendPinStateRequest(URL, pinName,pinType, state);
         }
     }
 }

@@ -10,14 +10,14 @@ namespace IOT_ArduinoDashboard.Logic.TimeSender
     public class TimeSender__
     {
         private RequestSender sender = new RequestSender();
-        public void SendTime(string ip)
+        public bool SendTime(string ip)
         {
             string URL = $"http://{ip}/time";
             string json = new JavaScriptSerializer().Serialize(new
             {
                 time = DateTime.Now
             });
-            sender.SendGenericRequest(URL, json);
+            return sender.SendGenericRequest(URL, json);
         }
     }
 }

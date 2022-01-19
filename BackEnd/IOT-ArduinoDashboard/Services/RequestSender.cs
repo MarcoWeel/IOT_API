@@ -11,51 +11,71 @@ namespace IOT_ArduinoDashboard.Services
 {
     public class RequestSender
     {
-        public void SendPinStateRequest(string url, string pinName, int type, double state)
+        public bool SendPinStateRequest(string url, string pinName, int type, double state)
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "POST";
-            if (type == 1)
+            try
             {
-                if (state > 1 || state < 0)
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Method = "POST";
+                if (type == 1)
                 {
-                    return;
+                    if (state > 1 || state < 0)
+                    {
+                        Console.WriteLine("Wrong State value ignoring");
+                        return true;
+                    }
                 }
-            }
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-            {
-                string json = new JavaScriptSerializer().Serialize(new
+
+                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                 {
-                    Pin = pinName,
-                    State = state,
-                    Type = type
-                });
+                    string json = new JavaScriptSerializer().Serialize(new
+                    {
+                        Pin = pinName,
+                        State = state,
+                        Type = type
+                    });
 
-                streamWriter.Write(json);
+                    streamWriter.Write(json);
+                }
+
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    var result = streamReader.ReadToEnd();
+                }
+
+                return true;
             }
-
-            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            catch (Exception e)
             {
-                var result = streamReader.ReadToEnd();
+                return false;
             }
         }
 
-        public void SendGenericRequest(string url, string json)
+        public bool SendGenericRequest(string url, string json)
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "POST";
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            try
             {
-                streamWriter.Write(json);
-            }
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Method = "POST";
+                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                {
+                    streamWriter.Write(json);
+                }
 
-            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    var result = streamReader.ReadToEnd();
+                }
+
+                return true;
+            }
+            catch (Exception e)
             {
-                var result = streamReader.ReadToEnd();
+                return false;
             }
         }
     }

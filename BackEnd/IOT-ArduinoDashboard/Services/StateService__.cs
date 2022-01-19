@@ -19,7 +19,15 @@ namespace IOT_ArduinoDashboard.Services
         //INITIALISE CLASSES HERE IF NECESSARY
         private TimeSender__ TimeSender = new TimeSender__();
         private blink blink = new blink();
+
         ////////////////////////////////////
+
+        //ADD TIMERS IF NECESSARY 
+        //HAVE TO BE IN SECONDS AND MORE THAN ONE SECOND
+        private int BlinkTimer = 2;
+
+        ////////////////////////////
+
 
         /////ADD VARIABLES HERE////
         private int blinkstate = 0;
@@ -28,15 +36,16 @@ namespace IOT_ArduinoDashboard.Services
 
         /////////////////////////// 
 
+        private int Count;
         private Thread thread;
         private bool shouldContinue;
         private int _serviceloopMinutes;
-        private bool stateChanged;
 
         public StateService__(ILogger<StateService__> logger)
         {
+            Count = 0;
             _logger = logger;
-            _serviceloopMinutes = 5;
+            _serviceloopMinutes = 1;
             _logger.LogWarning("StateService Created");
         }
 
@@ -50,37 +59,49 @@ namespace IOT_ArduinoDashboard.Services
                 var sw = Stopwatch.StartNew();
                 foreach (var arduino in manager.Arduinos)
                 {
-                    //ADD METHODS/CLASSES THAT NEED TO BE RUN CONTINUED HERE.
+                    //ADD METHODS/CLASSES THAT NEED TO BE RUN CONTINUED HERE. //ADD TIMER IF STATEMENT IF NECESSARY
                     if (arduino.UsedCommands.Contains(0))
                     {
                         TimeSender.SendTime(arduino.Ip);
                     }
-                    if (arduino.UsedCommands.Contains(2))
+
+                    if (Count == BlinkTimer)
                     {
-                        if (blinkstate == 0)
+                        if (arduino.UsedCommands.Contains(2))
                         {
-                            blinkstate = 1;
+                            if (blinkstate == 0)
+                            {
+                                blinkstate = 1;
+                            }
+                            else
+                            {
+                                blinkstate = 0;
+                            }
+                            if (!blink.SendBlink(arduino.Ip, "2", 1, blinkstate))
+                            {
+                                manager.Arduinos.Remove(arduino);
+                            }
                         }
-                        else
-                        {
-                            blinkstate = 0;
-                        }
-                        blink.SendBlink(arduino.Ip, "2", 1, blinkstate);
+                        BlinkTimer = BlinkTimer + 2;
                     }
                     //ADD METHODS/CLASSES THAT NEED TO BE RUN ON STATE CHANGE HERE.
-                    if (stateChanged)
+                    if (manager.StateChanged)
                     {
                         //For every method give it a unique command id so not every arduino gets every request.
                         if (arduino.UsedCommands.Contains(1))
                         {
                             //PUT METHOD HERE.
                         }
-                        Debug.Print("CHANGED STATE");
+                        _logger.LogWarning("State Changed");
                         manager.StateChanged = false;
                     }
                 }
 
                 ///////////////////////////////////////////////
+                if (manager.Arduinos.Count != 0)
+                {
+                    Count++;
+                }
                 var time = TimeSpan.FromSeconds(_serviceloopMinutes) - sw.Elapsed;
                 if (time < TimeSpan.Zero)
                 {

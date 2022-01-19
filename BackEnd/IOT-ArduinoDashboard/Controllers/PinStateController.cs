@@ -43,7 +43,6 @@ namespace IOT_ArduinoDashboard.Controllers
         [HttpPost("{pin}/{val}/{id}")]
         public void StateReceiver([FromRoute]string pin, double val, int id)
         {
-            sender.SendPinStateRequest("http://172.16.222.151/body", "2", 1, 0);
             receiver.ProcessRequest(pin, val, id);
             //sender.SendPostRequest("http://172.16.222.200/body", "12",1, 1);
         }

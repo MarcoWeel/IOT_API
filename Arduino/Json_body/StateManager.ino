@@ -67,7 +67,7 @@ void CheckStates() {
       if (pinModes.get(i) == 0) {
         double pinVal = digitalRead(activePins.get(i));
         if (pinVal != States.get(i)) {
-          String URL = serverPostPath + activePins.get(i) + "/" + pinVal;
+          String URL = serverPostPath + activePins.get(i) + "/" + pinVal + "/" + Id;
           Serial.println(URL);
           States.set(i, pinVal);
           PostClient.begin(client, URL);
@@ -79,11 +79,11 @@ void CheckStates() {
         }
       }
     }
-    else if (pinTypes.get(i) == 1) {
+    else if (pinTypes.get(i) == 0) {
       if (pinModes.get(i) == 0) {
         double pinVal = analogRead(activePins.get(i));
         if (pinVal != States.get(i)) {
-          String URL = serverPostPath + activePins.get(i) + "/" + pinVal;
+          String URL = serverPostPath + activePins.get(i) + "/" + pinVal+ "/" + Id;
           Serial.println(URL);
           States.set(i, pinVal);
           PostClient.begin(client, URL);
