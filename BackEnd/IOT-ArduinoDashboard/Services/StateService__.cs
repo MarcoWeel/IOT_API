@@ -19,6 +19,7 @@ namespace IOT_ArduinoDashboard.Services
         //INITIALISE CLASSES HERE IF NECESSARY
         private TimeSender__ TimeSender = new TimeSender__();
         private blink blink = new blink();
+        private TafelBoorVoorbeeld__ voorbeeld = new TafelBoorVoorbeeld__("13", "15", "12", "14");
 
         ////////////////////////////////////
 
@@ -90,7 +91,18 @@ namespace IOT_ArduinoDashboard.Services
                         //For every method give it a unique command id so not every arduino gets every request.
                         if (arduino.UsedCommands.Contains(1))
                         {
-                            //PUT METHOD HERE.
+                            foreach (var pin in arduino.Pins)
+                            {
+                                if (pin.PinName == voorbeeld.ButtonPin1)
+                                {
+                                    voorbeeld.ChangeState(pin.PinName, pin.State, arduino.Ip);
+                                }
+                                else if (pin.PinName == voorbeeld.ButtonPin2)
+                                {
+                                    voorbeeld.ChangeState(pin.PinName, pin.State, arduino.Ip);
+                                }
+                                
+                            }
                         }
                         _logger.LogWarning("State Changed");
                         manager.StateChanged = false;
