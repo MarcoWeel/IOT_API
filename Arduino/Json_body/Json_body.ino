@@ -10,9 +10,9 @@ ESP8266WebServer server(80);
 //Setup values
 const char* ssid = "Guests";
 const char* password =  "grade!eight";
-const int Id = 9;
-const String Ip = "172.16.222.155";
-String UsedCommands = "[1]";
+const int Id = 7;
+const String Ip = "172.31.176.1";
+String UsedCommands = "[4]";
 //End Setup values
 
 String serverGetName = "http://" + Ip + ":8080/pins/";

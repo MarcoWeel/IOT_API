@@ -20,12 +20,14 @@ namespace IOT_ArduinoDashboard.Services
         private TimeSender__ TimeSender = new TimeSender__();
         private blink blink = new blink();
         private TafelBoorVoorbeeld__ voorbeeld = new TafelBoorVoorbeeld__("13", "15", "12", "14");
+        private ButtonBlink___ buttonBlink = new ButtonBlink___();
 
         ////////////////////////////////////
 
         //ADD TIMERS IF NECESSARY 
         //HAVE TO BE IN SECONDS AND MORE THAN ONE SECOND
-        private int BlinkTimer = 2;
+        private int blinkTimer = 0;
+        private const int blinkTimerIncrement = 2;
 
         ////////////////////////////
 
@@ -42,6 +44,8 @@ namespace IOT_ArduinoDashboard.Services
         private bool shouldContinue;
         private int _serviceloopMinutes;
 
+
+        ///////CONSTRUCTOR////////
         public StateService__(ILogger<StateService__> logger)
         {
             Count = 0;
@@ -49,7 +53,7 @@ namespace IOT_ArduinoDashboard.Services
             _serviceloopMinutes = 1;
             _logger.LogWarning("StateService Created");
         }
-
+        ///////////////////////
 
         public async Task Loop()
         {
@@ -60,13 +64,13 @@ namespace IOT_ArduinoDashboard.Services
                 var sw = Stopwatch.StartNew();
                 foreach (var arduino in manager.Arduinos)
                 {
-                    //ADD METHODS/CLASSES THAT NEED TO BE RUN CONTINUED HERE. //ADD TIMER IF STATEMENT IF NECESSARY
+                    //ADD METHODS/CLASSES THAT NEED TO BE RUN continuous HERE. //ADD TIMER "IF STATEMENT" IF NECESSARY
                     if (arduino.UsedCommands.Contains(0))
                     {
                         TimeSender.SendTime(arduino.Ip);
                     }
-
-                    if (Count == BlinkTimer)
+                    //Timer example
+                    if (Count == blinkTimer)
                     {
                         if (arduino.UsedCommands.Contains(2))
                         {
@@ -83,7 +87,7 @@ namespace IOT_ArduinoDashboard.Services
                                 manager.Arduinos.Remove(arduino);
                             }
                         }
-                        BlinkTimer = BlinkTimer + 2;
+                        blinkTimer = blinkTimer + blinkTimerIncrement;
                     }
                     //ADD METHODS/CLASSES THAT NEED TO BE RUN ON STATE CHANGE HERE.
                     if (manager.StateChanged)
@@ -101,7 +105,15 @@ namespace IOT_ArduinoDashboard.Services
                                 {
                                     voorbeeld.ChangeState(pin.PinName, pin.State, arduino.Ip);
                                 }
-                                
+
+                            }
+                        }
+
+                        if (arduino.UsedCommands.Contains(4))
+                        {
+                            foreach (var pin in arduino.Pins)
+                            {
+                                buttonBlink.SendBlinkButton(arduino.Ip, pin.State, pin.PinName);
                             }
                         }
                         _logger.LogWarning("State Changed");

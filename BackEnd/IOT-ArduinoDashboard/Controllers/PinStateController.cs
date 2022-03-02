@@ -10,6 +10,7 @@ using IOT_ArduinoDashboard.Services.Objects;
 using IOT_ArduinoDashboard.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Pin = IOT_ArduinoDashboard.Services.Objects.Pin;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,11 +33,10 @@ namespace IOT_ArduinoDashboard.Controllers
 
         RequestSender sender = new RequestSender();
         // GET: api/<PinStateController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("{id}")]
+        public IEnumerable<Pin> Get([FromRoute] int id)
         {
-            sender.SendPinStateRequest("http://172.16.222.151/body", "2",1, 1);
-            return new string[] { "value1", "value2" };
+            return _StateService.manager.Arduinos.Find(r=> r.Id == id).Pins;
         }
 
 
